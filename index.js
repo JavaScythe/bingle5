@@ -1,5 +1,6 @@
 const fs = require('fs');
 const config = require("./config.js");
+let cache = [];
 function tickler(){
 	let fls = fs.readdirSync(__dirname+config["source"]);
 	let rls = [];
@@ -16,7 +17,13 @@ function tickler(){
 		}
 	}
 	for(var i in rls){
-		let s = fs.readFileSync(__dirname+config["source"]+"/"+rls[i], "utf-8");
+		let ri = __dirname+config["source"]+"/"+rls[i];
+		if(fs.statSync(ri)["mtime"].getTime() != cache[ri]){
+			cache[ri] = fs.statSync(ri)["mtime"].getTime();
+		} else {
+			continue;
+		}
+		let s = fs.readFileSync(ri, "utf-8");
 		s = conversion(s.split("\n"));
 		let f = __dirname+config["target"]+"/";
 		f+=rls[i].replace(".bg5", ".html");
@@ -112,7 +119,7 @@ function tickler(){
 		}
 		out=out.join("\n");
 		//console.log(out);
-		//console.log(`Saved ${out.length-input.length} charaters, ${(((out.length-input.length)/out.length)*100).toFixed(2)}%`);
+		console.log(`Saved ${out.length-input.length} charaters, ${(((out.length-input.length)/out.length)*100).toFixed(2)}%`);
 		return out;
 	}
 }
@@ -122,5 +129,4 @@ function tickler(){
 		await new Promise(resolve => setTimeout(resolve, 2000));
 	}
 })();
-
 
