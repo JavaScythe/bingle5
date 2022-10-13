@@ -50,11 +50,11 @@ function tickler(){
 			let end = true;
 			for(var k in l){
 				var c = l[k];
-				if(c == "("){
+				if(c == "(" && l[k-1] != "\\"){
 					tag +=" ";
 					mode = "tg-n-d";
 					continue;
-				} else if (c == ":"){
+				} else if (c == ":" && l[k-1] != "\\"){
 					if(mode == "tg-n-d"){
 						tag += `="`;
 						mode = "tg-d-d";
@@ -64,7 +64,7 @@ function tickler(){
 						mode = "tx-d";
 						continue;
 					}
-				} else if (c == ")"){
+				} else if (c == ")" && l[k-1] != "\\"){
 					if(mode == "tg-d-d"){
 						tag+=`"`;
 						mode = "tx-d";
@@ -72,7 +72,7 @@ function tickler(){
 							tag+=">";
 						}
 					}
-				} else if(c == "%"){
+				} else if(c == "%" && l[k-1] != "\\"){
 					if(l.length-1 == k){
 						nest.push(tgn);
 						tag+=">";
@@ -90,11 +90,14 @@ function tickler(){
 						tag+=c;
 						tgn+=c;
 					} else if(mode == "tg-n-d"){
-						tag+=c;
+						if(c!="\\")tag+=c;
+						if(c=="\\" && l[k-1] == "\\")tag+=c;
 					} else if(mode == "tg-d-d"){
-						tag+=c;
+						if(c!="\\")tag+=c;
+						if(c=="\\" && l[k-1] == "\\")tag+=c;
 					} else if(mode == "tx-d"){
-						tag+=c;
+						if(c!="\\")tag+=c;
+						if(c=="\\" && l[k-1] == "\\")tag+=c;
 					} else if(mode == "comment"){
 						if(c!="/")tag+=c;
 					} else {

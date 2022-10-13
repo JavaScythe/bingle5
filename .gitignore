@@ -1,3 +1,6 @@
 /public_dev/
 /public/
 /node_modules/
+package.json
+package-lock.json
+replit.nix
